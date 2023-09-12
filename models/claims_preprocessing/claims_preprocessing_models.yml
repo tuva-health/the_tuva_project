@@ -128,6 +128,7 @@ models:
         {% else %}claims_preprocessing{%- endif -%}
       alias: _int_acute_inpatient_institutional_encounter_id
       tags: acute_inpatient
+      materialized: table
 
   - name: acute_inpatient__encounter_start_and_end_dates
     description: Defines encounter start and end dates for acute inpatient encounters
@@ -177,7 +178,7 @@ models:
         {% else %}claims_preprocessing{%- endif -%}
       alias: _int_encounter_data_for_medical_claims
       tags: acute_inpatient
-      materialized: view
+      materialized: table
 
 ## Staging
 
