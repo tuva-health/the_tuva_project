@@ -7,6 +7,7 @@ models:
 
   - name: acute_inpatient__summary
     description: This table pulls together all the data needed to perform acute inpatient analytics into a single table.
+    terminology: test
     config:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_claims_preprocessing
