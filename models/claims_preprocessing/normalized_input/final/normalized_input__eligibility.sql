@@ -1,3 +1,9 @@
+{{ config(
+     enabled = var('claims_preprocessing_enabled',var('claims_enabled',var('tuva_marts_enabled',False)))
+   )
+}}
+
+
 select
     cast(elig.patient_id as {{ dbt.type_string() }} ) as patient_id
     , cast(elig.member_id as {{ dbt.type_string() }} ) as member_id
@@ -23,7 +29,7 @@ select
     , cast(elig.phone as {{ dbt.type_string() }} ) as phone
     , cast(elig.data_source as {{ dbt.type_string() }} ) as data_source
     , cast('{{ var('tuva_last_run')}}'  as {{ dbt.type_string() }} ) as tuva_last_run
-from {{ ref('eligibility') }} elig
+from {{ ref('normalized_input__stg_eligibility') }} elig
 left join {{ ref('normalized_input__int_eligibility_dates_normalize') }} date_norm
-    on elig.patient_id = date_norm.patient_id
+    on elig.patient_id_key = date_norm.patient_id_key
 
