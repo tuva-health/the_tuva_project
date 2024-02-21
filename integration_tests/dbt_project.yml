@@ -40,13 +40,6 @@ vars:
   # readmissions_enabled: true
 
 
-  ## CMS HCC data mart vars
-  # The payment_year variable has a default of the current year
-  cms_hcc_payment_year: 2023
-
-  # DO NOT CHANGE - Future logic to be added for selecting different HCC model versions
-  cms_hcc_model_version: CMS-HCC-V24
-
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -69,6 +62,8 @@ seeds:
   integration_tests:
     eligibility_seed:
       +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/tuva_synthetic_data','eligibility.csv',headers=true) }}"
+    lab_result_seed:
+      +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/tuva_synthetic_data','lab_result.csv',headers=true) }}"
     medical_claim_seed:
       +post-hook: "{{ the_tuva_project.load_seed('tuva-public-resources/tuva_synthetic_data','medical_claim.csv',headers=true) }}"
     pharmacy_claim_seed:
