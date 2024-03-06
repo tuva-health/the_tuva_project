@@ -45,7 +45,7 @@ select
       , hcpcs.hcpcs
       ,snomed.CONCEPTID ) as NORMALIZED_CODE
   ,  coalesce(all_procedures.NORMALIZED_DESCRIPTION
-      , icd10.desciption
+      , icd10.description
       , icd9.long_description
       , hcpcs.long_description
       , snomed.term) NORMALIZED_DESCRIPTION
