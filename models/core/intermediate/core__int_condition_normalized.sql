@@ -58,7 +58,7 @@ select
   , coalesce(
         all_conditions.NORMALIZED_DESCRIPTION
       , icd10.description
-      , icd9.description) as NORMALIZED_DESCRIPTION
+      , icd9.long_description) as NORMALIZED_DESCRIPTION
   , all_conditions.CONDITION_RANK
   , all_conditions.PRESENT_ON_ADMIT_CODE
   , all_conditions.PRESENT_ON_ADMIT_DESCRIPTION
@@ -100,7 +100,7 @@ select
   , coalesce(
         all_conditions.NORMALIZED_DESCRIPTION
       , icd10.description
-      , icd9.description) as NORMALIZED_DESCRIPTION
+      , icd9.long_description) as NORMALIZED_DESCRIPTION
   , all_conditions.CONDITION_RANK
   , all_conditions.PRESENT_ON_ADMIT_CODE
   , all_conditions.PRESENT_ON_ADMIT_DESCRIPTION
