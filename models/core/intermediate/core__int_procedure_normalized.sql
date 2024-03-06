@@ -23,6 +23,7 @@ select * from {{ ref('core__stg_claims_procedure') }}
 )
 
 {% if var('enable_normalize_engine',false) != true %}
+
 select
     all_procedures.PROCEDURE_ID
   , all_procedures.PATIENT_ID
@@ -37,16 +38,15 @@ select
       when icd9.icd_9_pcs is not null then 'icd-9-pcs'
       when hcpcs.hcpcs is not null then 'hcpcs'
       when snomed.conceptid is not null then 'snomed-ct'
-      else null end NORMALIZED_CODE_TYPE
+      else null end as NORMALIZED_CODE_TYPE
   , coalesce(all_procedures.NORMALIZED_CODE
       , icd10.icd_10_pcs
       , icd9.icd_9_pcs
       , hcpcs.hcpcs
-      ,snomed.CONCEPTID) as NORMALIZED_CODE
-
+      ,snomed.CONCEPTID ) as NORMALIZED_CODE
   ,  coalesce(all_procedures.NORMALIZED_DESCRIPTION
       , icd10.desciption
-      , icd9.description
+      , icd9.long_description
       , hcpcs.long_description
       , snomed.term) NORMALIZED_DESCRIPTION
   , all_procedures.MODIFIER_1
@@ -58,10 +58,10 @@ select
   , all_procedures.DATA_SOURCE
   , all_procedures.TUVA_LAST_RUN
 from all_procedures
-left join {{ ref('terminology__icd_10_cm') }} icd10
+left join {{ ref('terminology__icd_10_pcs') }} icd10
     on all_conditions.source_code_type = 'icd-10-pcs'
         and all_conditions.source_code = icd10.icd_10_pcs
-left join {{ ref('terminology__icd_9_cm') }} icd9
+left join {{ ref('terminology__icd_9_pcs') }} icd9
     on all_conditions.source_code_type = 'icd-9-pcs'
         and all_conditions.source_code = icd9.icd_9_pcs
 left join {{ ref('terminology__hcpcs_level_2') }} hcpcs
@@ -86,7 +86,7 @@ select
       when icd9.icd_9_pcs is not null then 'icd-9-pcs'
       when hcpcs.hcpcs is not null then 'hcpcs'
       when snomed.conceptid is not null then 'snomed-ct'
-      else null end as NORMALIZED_CODE_TYPE
+      else custom_mapped.normalized_code_type end as NORMALIZED_CODE_TYPE
   , coalesce(all_procedures.NORMALIZED_CODE
       , icd10.icd_10_pcs
       , icd9.icd_9_pcs
@@ -97,7 +97,8 @@ select
       , icd10.desciption
       , icd9.long_description
       , hcpcs.long_description
-      , snomed.term)
+      , snomed.term
+      , custom_mapped.normalized_description) as NORMALIZED_DESCRIPTION
   , all_procedures.MODIFIER_1
   , all_procedures.MODIFIER_2
   , all_procedures.MODIFIER_3
