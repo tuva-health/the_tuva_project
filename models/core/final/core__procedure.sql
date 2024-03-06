@@ -3,5 +3,5 @@
    )
 }}
 
-select * From {{ref('int__procedure_normalized')}}
+select * From {{ref('core__int_procedure_normalized')}}
 
