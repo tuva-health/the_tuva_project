@@ -1,0 +1,25 @@
+version: 2
+
+models:
+
+  - name: conditions_unmapped
+    description: >
+      unmapped condition codes
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
+        {% else %}normalize{%- endif -%}
+      alias: int__condition_normalized
+      tags: normalized
+      materialized: table
+
+  - name: procedures_unmapped
+    description: >
+      unmapped procedure codes
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
+        {% else %}normalize{%- endif -%}
+      alias: int__procedure_normalized
+      tags: normalized
+      materialized: table
