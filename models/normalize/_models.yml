@@ -2,24 +2,24 @@ version: 2
 
 models:
 
-  - name: conditions_unmapped
+  - name: condition_unmapped
     description: >
       unmapped condition codes
     config:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
         {% else %}normalize{%- endif -%}
-      alias: int__condition_normalized
+      alias: condition_unmapped
       tags: normalized
       materialized: table
 
-  - name: procedures_unmapped
+  - name: procedure_unmapped
     description: >
       unmapped procedure codes
     config:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
         {% else %}normalize{%- endif -%}
-      alias: int__procedure_normalized
+      alias: procedure_unmapped
       tags: normalized
       materialized: table

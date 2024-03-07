@@ -59,17 +59,17 @@ select
   , all_procedures.TUVA_LAST_RUN
 from all_procedures
 left join {{ ref('terminology__icd_10_pcs') }} icd10
-    on all_conditions.source_code_type = 'icd-10-pcs'
-        and all_conditions.source_code = icd10.icd_10_pcs
+    on all_procedures.source_code_type = 'icd-10-pcs'
+        and all_procedures.source_code = icd10.icd_10_pcs
 left join {{ ref('terminology__icd_9_pcs') }} icd9
-    on all_conditions.source_code_type = 'icd-9-pcs'
-        and all_conditions.source_code = icd9.icd_9_pcs
+    on all_procedures.source_code_type = 'icd-9-pcs'
+        and all_procedures.source_code = icd9.icd_9_pcs
 left join {{ ref('terminology__hcpcs_level_2') }} hcpcs
-    on all_conditions.source_code_type = 'hcpcs'
-        and all_conditions.source_code = hcpcs.hcpcs
+    on all_procedures.source_code_type = 'hcpcs'
+        and all_procedures.source_code = hcpcs.hcpcs
 left join health_gorilla.terminology.snomed snomed
-    on all_conditions.source_code_type = 'snomed-ct'
-        and all_conditions.source_code = snomed.conceptid
+    on all_procedures.source_code_type = 'snomed-ct'
+        and all_procedures.source_code = snomed.conceptid
 {% else %}
 
 select
@@ -94,7 +94,7 @@ select
       ,snomed.CONCEPTID
       ,custom_mapped.normalized_description  ) as NORMALIZED_CODE
   ,  coalesce(all_procedures.NORMALIZED_DESCRIPTION
-      , icd10.desciption
+      , icd10.description
       , icd9.long_description
       , hcpcs.long_description
       , snomed.term
@@ -109,27 +109,27 @@ select
   , all_procedures.TUVA_LAST_RUN
 from all_procedures
 left join {{ ref('terminology__icd_10_pcs') }} icd10
-    on all_conditions.source_code_type = 'icd-10-pcs'
-        and all_conditions.source_code = icd10.icd_10_pcs
+    on all_procedures.source_code_type = 'icd-10-pcs'
+        and all_procedures.source_code = icd10.icd_10_pcs
 left join {{ ref('terminology__icd_9_pcs') }} icd9
-    on all_conditions.source_code_type = 'icd-9-pcs'
-        and all_conditions.source_code = icd9.icd_9_pcs
+    on all_procedures.source_code_type = 'icd-9-pcs'
+        and all_procedures.source_code = icd9.icd_9_pcs
 left join {{ ref('terminology__hcpcs_level_2') }} hcpcs
-    on all_conditions.source_code_type = 'hcpcs'
-        and all_conditions.source_code = hcpcs.hcpcs
+    on all_procedures.source_code_type = 'hcpcs'
+        and all_procedures.source_code = hcpcs.hcpcs
 left join health_gorilla.terminology.snomed snomed
-    on all_conditions.source_code_type = 'snomed-ct'
-        and all_conditions.source_code = snomed.conceptid
+    on all_procedures.source_code_type = 'snomed-ct'
+        and all_procedures.source_code = snomed.conceptid
 left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
     on custom_mapped.table = 'procedure'
-        and ( lower(all_conditions.source_code_type) = lower(custom_mapped.source_code_type)
-            or ( all_conditions.source_code_type is null and custom_mapped.source_code_type is null)
+        and ( lower(all_procedures.source_code_type) = lower(custom_mapped.source_code_type)
+            or ( all_procedures.source_code_type is null and custom_mapped.source_code_type is null)
             )
-        and (all_conditions.source_code = custom_mapped.source_code
-            or ( all_conditions.source_code is null and custom_mapped.source_code is null)
+        and (all_procedures.source_code = custom_mapped.source_code
+            or ( all_procedures.source_code is null and custom_mapped.source_code is null)
             )
-        and (all_conditions.source_description = custom_mapped.source_description
-            or ( all_conditions.source_description is null and custom_mapped.source_description is null)
+        and (all_procedures.source_description = custom_mapped.source_description
+            or ( all_procedures.source_description is null and custom_mapped.source_description is null)
             )
-        and not (all_conditions.source_code is null and all_conditions.source_description is null)
+        and not (all_procedures.source_code is null and all_procedures.source_description is null)
 {% endif %}
