@@ -116,7 +116,7 @@ left join {{ ref('terminology__icd_9_cm') }} icd9
     on all_conditions.source_code_type = 'icd-9-cm'
         and all_conditions.source_code = icd9.icd_9_cm
 left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
-    on custom_mapped.table = 'condition'
+    on custom_mapped.tab = 'condition'
         and ( lower(all_conditions.source_code_type) = lower(custom_mapped.source_code_type)
             or ( all_conditions.source_code_type is null and custom_mapped.source_code_type is null)
             )
