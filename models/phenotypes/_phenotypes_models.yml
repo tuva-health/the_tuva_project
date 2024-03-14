@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: all_conditions
+    config:
+      schema: phenotypes
+      materialized: table
+      tags: phenotypes
+
+  - name: all_medications
+    config:
+      schema: phenotypes
+      materialized: table
+      tags: phenotypes
