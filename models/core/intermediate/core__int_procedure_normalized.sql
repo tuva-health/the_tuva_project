@@ -121,7 +121,7 @@ left join health_gorilla.terminology.snomed snomed
     on all_procedures.source_code_type = 'snomed-ct'
         and all_procedures.source_code = snomed.conceptid
 left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
-    on custom_mapped.tab = 'procedure'
+    on custom_mapped.domain = 'procedure'
         and ( lower(all_procedures.source_code_type) = lower(custom_mapped.source_code_type)
             or ( all_procedures.source_code_type is null and custom_mapped.source_code_type is null)
             )
