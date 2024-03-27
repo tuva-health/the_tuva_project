@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('claims_enabled',var('clinical_enabled',var('tuva_marts_enabled',False)))
+     enabled = False
    )
 }}
 
@@ -132,4 +132,6 @@ left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
             or ( all_procedures.source_description is null and custom_mapped.source_description is null)
             )
         and not (all_procedures.source_code is null and all_procedures.source_description is null)
+        and not (custom_mapped.not_mapped is not null)
+
 {% endif %}
