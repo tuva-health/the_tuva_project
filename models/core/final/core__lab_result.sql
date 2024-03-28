@@ -30,7 +30,7 @@ select
         when labs.NORMALIZED_DESCRIPTION is not null then labs.NORMALIZED_DESCRIPTION
         when loinc.long_common_name is not null then loinc.long_common_name
         when snomed.term is not null then snomed.term
-        else null end as NORMALIZED_CODE
+        else null end as NORMALIZED_DESCRIPTION
     , case when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
          when coalesce(LOINC.loinc,loinc.long_common_name,snomed.conceptid,snomed.term) is not null then 'automatic'
          end as mapping_method
@@ -54,7 +54,7 @@ select
 From {{ ref('core__stg_clinical_lab_result')}} as labs
 left join {{ ref('terminology__loinc') }} loinc
     on labs.source_code_type = 'loinc'
-        and all_procedures.source_code = loinc.loinc
+        and labs.source_code = loinc.loinc
 left join health_gorilla.terminology.snomed snomed
     on labs.source_code_type = 'snomed-ct'
         and labs.source_code = snomed.conceptid
@@ -84,7 +84,7 @@ select
         when labs.NORMALIZED_DESCRIPTION is not null then labs.NORMALIZED_DESCRIPTION
         when loinc.long_common_name is not null then loinc.long_common_name
         when snomed.term is not null then snomed.term
-        else null end as NORMALIZED_CODE
+        else null end as NORMALIZED_DESCRIPTION
   , case  when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
         when coalesce(custom_mapped.normalized_code,custom_mapped.normalized_description) is not null and custom_mapped.not_mapped is null then 'custom'
         when custom_mapped.not_mapped is not null then custom_mapped.not_mapped
@@ -110,7 +110,7 @@ select
 From  {{ ref('core__stg_clinical_lab_result')}} as labs
 left join {{ ref('terminology__loinc') }} loinc
     on labs.source_code_type = 'loinc'
-        and all_procedures.source_code = loinc.loinc
+        and labs.source_code = loinc.loinc
 left join health_gorilla.terminology.snomed snomed
     on labs.source_code_type = 'snomed-ct'
         and labs.source_code = snomed.conceptid

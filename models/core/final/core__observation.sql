@@ -46,7 +46,7 @@ select
       , loinc.long_common_name
       ) as NORMALIZED_DESCRIPTION
      , case
-         when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
+         when coalesce(obs.NORMALIZED_CODE, obs.NORMALIZED_DESCRIPTION) is not null then 'manual'
          when coalesce(
             icd10cm.icd_10_cm
           , icd9cm.icd_9_cm
@@ -133,7 +133,7 @@ select
       , custom_mapped.normalized_description
       ) as NORMALIZED_DESCRIPTION
      , case
-         when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
+         when coalesce(obs.NORMALIZED_CODE, obs.NORMALIZED_DESCRIPTION) is not null then 'manual'
          when coalesce(
             icd10cm.icd_10_cm
           , icd9cm.icd_9_cm
