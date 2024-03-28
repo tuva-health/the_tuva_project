@@ -31,7 +31,7 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
         {% else %}normalize{%- endif -%}
-      alias: procedure_unmapped
+      alias: lab_result_unmapped
       tags: normalized
       materialized: table
 
@@ -42,7 +42,7 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
         {% else %}normalize{%- endif -%}
-      alias: procedure_unmapped
+      alias: medication_unmapped
       tags: normalized
       materialized: table
 
@@ -53,6 +53,6 @@ models:
       schema: |
         {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
         {% else %}normalize{%- endif -%}
-      alias: procedure_unmapped
+      alias: observation_unmapped
       tags: normalized
       materialized: table
