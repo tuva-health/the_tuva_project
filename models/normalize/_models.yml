@@ -2,7 +2,7 @@ version: 2
 
 models:
 
-  - name: condition_unmapped
+  - name: normalize__unmapped_condition
     description: >
       unmapped condition codes
     config:
@@ -13,7 +13,40 @@ models:
       tags: normalized
       materialized: table
 
-  - name: procedure_unmapped
+  - name: normalize__unmapped_procedure
+    description: >
+      unmapped procedure codes
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
+        {% else %}normalize{%- endif -%}
+      alias: procedure_unmapped
+      tags: normalized
+      materialized: table
+
+  - name: normalize__unmapped_lab_result
+    description: >
+      unmapped procedure codes
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
+        {% else %}normalize{%- endif -%}
+      alias: procedure_unmapped
+      tags: normalized
+      materialized: table
+
+  - name: normalize__unmapped_medication
+    description: >
+      unmapped procedure codes
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_core
+        {% else %}normalize{%- endif -%}
+      alias: procedure_unmapped
+      tags: normalized
+      materialized: table
+
+  - name: normalize__unmapped_observation
     description: >
       unmapped procedure codes
     config:

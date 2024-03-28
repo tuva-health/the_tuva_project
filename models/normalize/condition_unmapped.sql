@@ -1,8 +1,20 @@
 
-select SOURCE_CODE_TYPE, SOURCE_CODE, SOURCE_DESCRIPTION,
+select i.SOURCE_CODE_TYPE, i.SOURCE_CODE, i.SOURCE_DESCRIPTION,
        count(*) as item_count,
-       listagg(distinct DATA_SOURCE, ', ') within group ( order by DATA_SOURCE ) as data_sources
-from {{ref('core__condition')}}
-where NORMALIZED_CODE is null and NORMALIZED_DESCRIPTION is null
-    and not ( SOURCE_CODE is null and SOURCE_DESCRIPTION is null)
-group by SOURCE_CODE_TYPE, SOURCE_CODE, SOURCE_DESCRIPTION
+       listagg(distinct i.DATA_SOURCE, ', ') within group ( order by i.DATA_SOURCE ) as data_sources
+from {{ref('core__condition')}} i
+left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
+    on custom_mapped.domain = 'condition'
+        and ( lower(i.source_code_type) = lower(custom_mapped.source_code_type)
+            or ( i.source_code_type is null and custom_mapped.source_code_type is null)
+            )
+        and (i.source_code = custom_mapped.source_code
+            or ( i.source_code is null and custom_mapped.source_code is null)
+            )
+        and (i.source_description = custom_mapped.source_description
+            or ( i.source_description is null and custom_mapped.source_description is null)
+            )
+where i.NORMALIZED_CODE is null and i.NORMALIZED_DESCRIPTION is null
+    and not ( i.SOURCE_CODE is null and i.SOURCE_DESCRIPTION is null)
+    and custom_mapped.not_mapped is not null
+group by i.SOURCE_CODE_TYPE, i.SOURCE_CODE, i.SOURCE_DESCRIPTION
