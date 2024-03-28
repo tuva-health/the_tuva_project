@@ -56,8 +56,8 @@ left join {{ ref('terminology__loinc') }} loinc
     on labs.source_code_type = 'loinc'
         and all_procedures.source_code = loinc.loinc
 left join health_gorilla.terminology.snomed snomed
-    on all_procedures.source_code_type = 'snomed-ct'
-        and all_procedures.source_code = snomed.conceptid
+    on labs.source_code_type = 'snomed-ct'
+        and labs.source_code = snomed.conceptid
 
  {% else %}
 
@@ -112,8 +112,8 @@ left join {{ ref('terminology__loinc') }} loinc
     on labs.source_code_type = 'loinc'
         and all_procedures.source_code = loinc.loinc
 left join health_gorilla.terminology.snomed snomed
-    on all_procedures.source_code_type = 'snomed-ct'
-        and all_procedures.source_code = snomed.conceptid
+    on labs.source_code_type = 'snomed-ct'
+        and labs.source_code = snomed.conceptid
 left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
     on custom_mapped.domain = 'lab_result'
         and ( lower(labs.source_code_type) = lower(custom_mapped.source_code_type)

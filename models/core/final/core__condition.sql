@@ -103,9 +103,9 @@ select
       , icd9.icd_9_cm) as NORMALIZED_CODE
   , coalesce(
         all_conditions.NORMALIZED_DESCRIPTION
-      , custom_mapped.normalized_description
       , icd10.description
-      , icd9.long_description) as NORMALIZED_DESCRIPTION
+      , icd9.long_description
+      , custom_mapped.normalized_description) as NORMALIZED_DESCRIPTION
   , case when coalesce(all_conditions.NORMALIZED_CODE, all_conditions.NORMALIZED_DESCRIPTION) is not null then 'manual'
          when coalesce(custom_mapped.normalized_code,custom_mapped.normalized_description) is not null and custom_mapped.not_mapped is null then 'custom'
          when custom_mapped.not_mapped is not null then custom_mapped.not_mapped

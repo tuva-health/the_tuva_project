@@ -3,5 +3,8 @@ icd-9-cm
 icd-10-cm
 icd-9-pcs
 icd-10-pcs
-hcpcs level 1
-hcpcs level 2
+hcpcs
+snomed-ct
+loinc
+ndc
+rxnorm

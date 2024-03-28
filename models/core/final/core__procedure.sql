@@ -39,7 +39,7 @@ select
       when icd9.icd_9_pcs is not null then 'icd-9-pcs'
       when hcpcs.hcpcs is not null then 'hcpcs'
       when snomed.conceptid is not null then 'snomed-ct'
-      else null end as NORMALIZED_CODE_TYPE
+      end as NORMALIZED_CODE_TYPE
   , coalesce(all_procedures.NORMALIZED_CODE
       , icd10.icd_10_pcs
       , icd9.icd_9_pcs
@@ -51,8 +51,6 @@ select
       , hcpcs.long_description
       , snomed.term) NORMALIZED_DESCRIPTION
   , case when coalesce(all_procedures.NORMALIZED_CODE, all_procedures.NORMALIZED_DESCRIPTION) is not null then 'manual'
-         when coalesce(custom_mapped.normalized_code,custom_mapped.normalized_description) is not null and custom_mapped.not_mapped is null then 'custom'
-         when custom_mapped.not_mapped is not null then custom_mapped.not_mapped
          when coalesce(icd10.icd_10_pcs,icd10.description,icd9.icd_9_pcs,icd9.long_description, hcpcs.hcpcs, snomed.conceptid) is not null then 'automatic'
          end as mapping_method
   , all_procedures.MODIFIER_1
@@ -76,7 +74,10 @@ left join {{ ref('terminology__hcpcs_level_2') }} hcpcs
 left join health_gorilla.terminology.snomed snomed
     on all_procedures.source_code_type = 'snomed-ct'
         and all_procedures.source_code = snomed.conceptid
+
+
 {% else %}
+
 
 select
     all_procedures.PROCEDURE_ID
