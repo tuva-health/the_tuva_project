@@ -85,7 +85,7 @@ select
         when loinc.long_common_name is not null then loinc.long_common_name
         when snomed.term is not null then snomed.term
         else null end as NORMALIZED_CODE
-  , case case when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
+  , case  when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
         when coalesce(custom_mapped.normalized_code,custom_mapped.normalized_description) is not null and custom_mapped.not_mapped is null then 'custom'
         when custom_mapped.not_mapped is not null then custom_mapped.not_mapped
         when coalesce(LOINC.loinc,loinc.long_common_name,snomed.conceptid,snomed.term) is not null then 'automatic'

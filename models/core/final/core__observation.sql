@@ -17,10 +17,10 @@ select
     , obs.SOURCE_DESCRIPTION
     , case
         when obs.NORMALIZED_CODE_TYPE is not null then obs.NORMALIZED_CODE_TYPE
-        when icd10.icd_10_cm is not null then 'icd-10-cm'
-        when icd9.icd_9_cm is not null then 'icd-9-cm'
-        when icd10pcs.icd_10_cm is not null then 'icd-10-pcs'
-        when icd9pcs.icd_9_cm is not null then 'icd-10-pcs'
+        when icd10cm.icd_10_cm is not null then 'icd-10-cm'
+        when icd9cm.icd_9_cm is not null then 'icd-9-cm'
+        when icd10pcs.icd_10_pcs is not null then 'icd-10-pcs'
+        when icd9pcs.icd_9_pcs is not null then 'icd-10-pcs'
         when hcpcs.hcpcs is not null then 'hcpcs'
         when snomed.conceptid is not null then 'snomed-ct'
         when loinc.loinc is not null then 'loinc'
@@ -29,8 +29,8 @@ select
         obs.NORMALIZED_CODE
       , icd10cm.icd_10_cm
       , icd9cm.icd_9_cm
-      , icd10pcs.icd_10_cm
-      , icd9pcs.icd_9_cm
+      , icd10pcs.icd_10_pcs
+      , icd9pcs.icd_9_pcs
       , hcpcs.hcpcs
       , snomed.conceptid
       , loinc.loinc
@@ -50,8 +50,8 @@ select
          when coalesce(
             icd10cm.icd_10_cm
           , icd9cm.icd_9_cm
-          , icd10pcs.icd_10_cm
-          , icd9pcs.icd_9_cm
+          , icd10pcs.icd_10_pcs
+          , icd9pcs.icd_9_pcs
           , hcpcs.hcpcs
           , snomed.conceptid
           , loinc.loinc) is not null then 'automatic'
@@ -100,12 +100,12 @@ select
     , obs.SOURCE_CODE_TYPE
     , obs.SOURCE_CODE
     , obs.SOURCE_DESCRIPTION
-    , caseS
+    , case
         when obs.NORMALIZED_CODE_TYPE is not null then obs.NORMALIZED_CODE_TYPE
-        when icd10.icd_10_cm is not null then 'icd-10-cm'
-        when icd9.icd_9_cm is not null then 'icd-9-cm'
-        when icd10pcs.icd_10_cm is not null then 'icd-10-pcs'
-        when icd9pcs.icd_9_cm is not null then 'icd-10-pcs'
+        when icd10cm.icd_10_cm is not null then 'icd-10-cm'
+        when icd9cm.icd_9_cm is not null then 'icd-9-cm'
+        when icd10pcs.icd_10_pcs is not null then 'icd-10-pcs'
+        when icd9pcs.icd_9_pcs is not null then 'icd-10-pcs'
         when hcpcs.hcpcs is not null then 'hcpcs'
         when snomed.conceptid is not null then 'snomed-ct'
         when loinc.loinc is not null then 'loinc'
@@ -114,8 +114,8 @@ select
         obs.NORMALIZED_CODE
       , icd10cm.icd_10_cm
       , icd9cm.icd_9_cm
-      , icd10pcs.icd_10_cm
-      , icd9pcs.icd_9_cm
+      , icd10pcs.icd_10_pcs
+      , icd9pcs.icd_9_pcs
       , hcpcs.hcpcs
       , snomed.conceptid
       , loinc.loinc
@@ -137,8 +137,8 @@ select
          when coalesce(
             icd10cm.icd_10_cm
           , icd9cm.icd_9_cm
-          , icd10pcs.icd_10_cm
-          , icd9pcs.icd_9_cm
+          , icd10pcs.icd_10_pcs
+          , icd9pcs.icd_9_pcs
           , hcpcs.hcpcs
           , snomed.conceptid
           , loinc.loinc) is not null then 'automatic'
