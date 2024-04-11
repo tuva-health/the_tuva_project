@@ -138,42 +138,42 @@ from {{ ref('core__stg_clinical_medication')}} meds
         on meds.source_code_type = 'rxnorm'
         and meds.source_code = rxatc.rxcui
     left join {{ ref('custom_mapped') }} custom_mapped_ndc
-        on custom_mapped.domain = 'medication'
-        and custom_mapped.normalized_code_type = 'ndc'
-        and ( lower(meds.source_code_type) = lower(custom_mapped.source_code_type)
-            or ( meds.source_code_type is null and custom_mapped.source_code_type is null)
+        on custom_mapped_ndc.domain = 'medication'
+        and custom_mapped_ndc.normalized_code_type = 'ndc'
+        and ( lower(meds.source_code_type) = lower(custom_mapped_ndc.source_code_type)
+            or ( meds.source_code_type is null and custom_mapped_ndc.source_code_type is null)
             )
-        and (meds.source_code = custom_mapped.source_code
-            or ( meds.source_code is null and custom_mapped.source_code is null)
+        and (meds.source_code = custom_mapped_ndc.source_code
+            or ( meds.source_code is null and custom_mapped_ndc.source_code is null)
             )
-        and (meds.source_description = custom_mapped.source_description
-            or ( meds.source_description is null and custom_mapped.source_description is null)
+        and (meds.source_description = custom_mapped_ndc.source_description
+            or ( meds.source_description is null and custom_mapped_ndc.source_description is null)
             )
         and not (meds.source_code is null and meds.source_description is null)
     left join {{ ref('custom_mapped') }} custom_mapped_rxnorm
-        on custom_mapped.domain = 'medication'
-        and custom_mapped.normalized_code_type = 'rxnorm'
-        and ( lower(meds.source_code_type) = lower(custom_mapped.source_code_type)
-            or ( meds.source_code_type is null and custom_mapped.source_code_type is null)
+        on custom_mapped_rxnorm.domain = 'medication'
+        and custom_mapped_rxnorm.normalized_code_type = 'rxnorm'
+        and ( lower(meds.source_code_type) = lower(custom_mapped_rxnorm.source_code_type)
+            or ( meds.source_code_type is null and custom_mapped_rxnorm.source_code_type is null)
             )
-        and (meds.source_code = custom_mapped.source_code
-            or ( meds.source_code is null and custom_mapped.source_code is null)
+        and (meds.source_code = custom_mapped_rxnorm.source_code
+            or ( meds.source_code is null and custom_mapped_rxnorm.source_code is null)
             )
-        and (meds.source_description = custom_mapped.source_description
-            or ( meds.source_description is null and custom_mapped.source_description is null)
+        and (meds.source_description = custom_mapped_rxnorm.source_description
+            or ( meds.source_description is null and custom_mapped_rxnorm.source_description is null)
             )
         and not (meds.source_code is null and meds.source_description is null)
     left join {{ ref('custom_mapped') }} custom_mapped_atc
         on custom_mapped.domain = 'medication'
-        and custom_mapped.normalized_code_type = 'atc'
-        and ( lower(meds.source_code_type) = lower(custom_mapped.source_code_type)
-            or ( meds.source_code_type is null and custom_mapped.source_code_type is null)
+        and custom_mapped_atc.normalized_code_type = 'atc'
+        and ( lower(meds.source_code_type) = lower(custom_mapped_atc.source_code_type)
+            or ( meds.source_code_type is null and custom_mapped_atc.source_code_type is null)
             )
-        and (meds.source_code = custom_mapped.source_code
-            or ( meds.source_code is null and custom_mapped.source_code is null)
+        and (meds.source_code = custom_mapped_atc.source_code
+            or ( meds.source_code is null and custom_mapped_atc.source_code is null)
             )
-        and (meds.source_description = custom_mapped.source_description
-            or ( meds.source_description is null and custom_mapped.source_description is null)
+        and (meds.source_description = custom_mapped_atc.source_description
+            or ( meds.source_description is null and custom_mapped_atc.source_description is null)
             )
         and not (meds.source_code is null and meds.source_description is null)
 {% endif %}
