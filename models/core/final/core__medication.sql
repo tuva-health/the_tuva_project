@@ -65,7 +65,7 @@ from {{ ref('core__stg_clinical_medication')}} meds
         on meds.source_code_type = 'ndc'
     left join {{ref('terminology__rxnorm_to_atc')}} rxatc
         on meds.source_code_type = 'rxnorm'
-    )
+
 
 {% else %}
 
@@ -204,12 +204,10 @@ select
    , case
         when sm.atc_code is not null then sm.atc_code
         when rxatc.rxcui is not null then null -- need to add codes to terminology
-        when custom_mapped_atc.normalized_code is not null then custom_mapped_atc.normalized_code
         else null end as ATC_CODE
    , case
         when sm.atc_description is not null then sm.atc_description
         when rxatc.rxcui is not null then rxatc.atc_4_name
-        when custom_mapped_atc.normalized_description is not null then custom_mapped_atc.normalized_description
         else null end as ATC_DESCRIPTION
    , case
         when sm.atc_code is not null then 'manual'
