@@ -227,6 +227,6 @@ select
    , sm.TUVA_LAST_RUN
 from source_mapping sm
     left join {{ref('terminology__ndc')}} ndc
-        and sm.ndc_code = ndc.ndc
+        on sm.ndc_code = ndc.ndc
     left join {{ref('terminology__rxnorm_to_atc')}} rxatc
         on ndc.rxcui = rxatc.rxcui or sm.rxnorm_code = rxatc.rxcui
