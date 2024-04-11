@@ -150,7 +150,7 @@ from {{ ref('core__stg_clinical_medication')}} meds
             or ( meds.source_description is null and custom_mapped.source_description is null)
             )
         and not (meds.source_code is null and meds.source_description is null)
-    left join {{ ref('custom_mapped') }} custom_mapped_ndc
+    left join {{ ref('custom_mapped') }} custom_mapped_rxnorm
         on custom_mapped.domain = 'medication'
         and custom_mapped.normalized_code_type = 'rxnorm'
         and ( lower(meds.source_code_type) = lower(custom_mapped.source_code_type)
@@ -163,7 +163,7 @@ from {{ ref('core__stg_clinical_medication')}} meds
             or ( meds.source_description is null and custom_mapped.source_description is null)
             )
         and not (meds.source_code is null and meds.source_description is null)
-    left join {{ ref('custom_mapped') }} custom_mapped_ndc
+    left join {{ ref('custom_mapped') }} custom_mapped_atc
         on custom_mapped.domain = 'medication'
         and custom_mapped.normalized_code_type = 'atc'
         and ( lower(meds.source_code_type) = lower(custom_mapped.source_code_type)
