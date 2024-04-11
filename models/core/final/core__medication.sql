@@ -63,8 +63,10 @@ with source_mapping as (
 from {{ ref('core__stg_clinical_medication')}} meds
     left join {{ref('terminology__ndc')}} ndc
         on meds.source_code_type = 'ndc'
+        and meds.source_code = ndc.ndc
     left join {{ref('terminology__rxnorm_to_atc')}} rxatc
         on meds.source_code_type = 'rxnorm'
+        and meds.source_code = rxatc.rxcui
 
 
 {% else %}
@@ -131,8 +133,10 @@ from {{ ref('core__stg_clinical_medication')}} meds
 from {{ ref('core__stg_clinical_medication')}} meds
     left join {{ref('terminology__ndc')}} ndc
         on meds.source_code_type = 'ndc'
+        and meds.source_code = ndc.ndc
     left join {{ref('terminology__rxnorm_to_atc')}} rxatc
         on meds.source_code_type = 'rxnorm'
+        and meds.source_code = rxatc.rxcui
     left join {{ ref('custom_mapped') }} custom_mapped_ndc
         on custom_mapped.domain = 'medication'
         and custom_mapped.normalized_code_type = 'ndc'
@@ -223,6 +227,6 @@ select
    , sm.TUVA_LAST_RUN
 from source_mapping sm
     left join {{ref('terminology__ndc')}} ndc
-        on sm.ndc_code = ndc.ndc
+        and sm.ndc_code = ndc.ndc
     left join {{ref('terminology__rxnorm_to_atc')}} rxatc
         on ndc.rxcui = rxatc.rxcui or sm.rxnorm_code = rxatc.rxcui
