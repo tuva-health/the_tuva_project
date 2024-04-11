@@ -7,9 +7,9 @@
 select i.SOURCE_CODE_TYPE, i.SOURCE_CODE, i.SOURCE_DESCRIPTION,
        count(*) as item_count,
        listagg(distinct i.DATA_SOURCE, ', ') within group ( order by i.DATA_SOURCE ) as data_sources
-from {{ref('core__procedure')}} i
+from {{ref('core__medication')}} i
 left join {{ ref('custom_mapped') }} custom_mapped
-    on custom_mapped.domain = 'procedure'
+    on custom_mapped.domain = 'medication'
         and ( lower(i.source_code_type) = lower(custom_mapped.source_code_type)
             or ( i.source_code_type is null and custom_mapped.source_code_type is null)
             )

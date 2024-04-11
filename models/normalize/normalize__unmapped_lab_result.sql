@@ -1,9 +1,14 @@
-
+{{ config(
+     enabled = (var('enable_normalize_engine', False) == True) and (
+                 var('claims_enabled', var('clinical_enabled', var('tuva_marts_enabled', False)))
+               ) | as_bool
+   )
+}}
 select i.SOURCE_CODE_TYPE, i.SOURCE_CODE, i.SOURCE_DESCRIPTION,
        count(*) as item_count,
        listagg(distinct i.DATA_SOURCE, ', ') within group ( order by i.DATA_SOURCE ) as data_sources
 from {{ref('core__lab_result')}} i
-left join {{ source('normalize_engine','custom_mapped') }} custom_mapped
+left join {{ ref('custom_mapped') }} custom_mapped
     on custom_mapped.domain = 'lab_result'
         and ( lower(i.source_code_type) = lower(custom_mapped.source_code_type)
             or ( i.source_code_type is null and custom_mapped.source_code_type is null)
