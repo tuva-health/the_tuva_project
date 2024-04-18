@@ -10,8 +10,9 @@ models:
       tags: hcc_suspecting
       materialized: table
     description: >
-      This final model displays the list of suspecting conditions per patient 
-      with the reason and contributing factors.
+      This final model displays the list of suspecting conditions per patient, 
+      data_source, hcc, and diagnosis code with the reason and contributing 
+      factors.
     columns:
       - name: patient_id
         description: Unique ID for the patient.
@@ -32,6 +33,39 @@ models:
       - name: contributing_factor
         description: >
           Description of the contributing factor(s) for the suspecting condition.
+      - name: condition_date
+        description: Date when the condition was recorded or billed.
+      - name: tuva_last_run
+        description: The date the model was run.
+
+  - name: hcc_suspecting__list_rollup
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: list_rollup
+      tags: hcc_suspecting
+      materialized: table
+    description: >
+      This final model displays the list of suspecting conditions per patient 
+      and hcc with the latest contributing factor rolled up.
+    columns:
+      - name: patient_id
+        description: Unique ID for the patient.
+      - name: hcc_code
+        description: >
+          HCC code from the latest CMS HCC model available in the mart.
+        meta:
+          terminology: https://github.com/tuva-health/tuva/blob/main/seeds/value_sets/hcc_suspecting/hcc_suspecting__hcc_descriptions.csv
+      - name: hcc_description
+        description: >
+          HCC description from the latest CMS HCC model available in the mart.
+      - name: reason
+        description: Standardized reason for the suspecting condition.
+      - name: contributing_factor
+        description: >
+          Description of the contributing factor(s) for the suspecting condition.
+      - name: latest_condition_date
+        description: Date when the condition was recorded or billed.
       - name: tuva_last_run
         description: The date the model was run.
 
@@ -91,6 +125,123 @@ models:
       - name: tuva_last_run
         description: The date the model was run.
 
+  - name: hcc_suspecting__int_comorbidity_suspects
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: _int_comorbidity_suspects
+      tags: hcc_suspecting
+      materialized: table
+    description: Suspecting comorbidities.
+    columns:
+      - name: patient_id
+        description: Unique ID for the patient.
+      - name: data_source
+        description: >
+          User-configured field that indicates the data source (e.g. typically 
+          named after the payer and state "BCBS Tennessee").
+      - name: hcc_code
+        description: >
+          HCC code from the latest CMS HCC model available in the mart.
+        meta:
+          terminology: https://github.com/tuva-health/tuva/blob/main/seeds/value_sets/hcc_suspecting/hcc_suspecting__hcc_descriptions.csv
+      - name: hcc_description
+        description: >
+          HCC description from the latest CMS HCC model available in the mart.
+      - name: condition_1_concept_name
+        description: Clinical concept name for the first comorbid condition.
+      - name: condition_1_code
+        description: Condition code for the first comorbid condition.
+      - name: condition_1_recorded_date
+        description: Recorded date for the first comorbid condition.
+      - name: condition_2_concept_name
+        description: Clinical concept name for the second comorbid condition.
+      - name: condition_2_code
+        description: Condition code for the second comorbid condition.
+      - name: condition_2_recorded_date
+        description: Recorded date for the second comorbid condition.
+      - name: current_year_billed
+        description: >
+          Flag indicating that the HCC has been billed during the payment year.
+      - name: tuva_last_run
+        description: The date the model was run.
+
+  - name: hcc_suspecting__int_lab_suspects
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: _int_lab_suspects
+      tags: hcc_suspecting
+      materialized: table
+    description: Suspecting conditions based on labs.
+    columns:
+      - name: patient_id
+        description: Unique ID for the patient.
+      - name: data_source
+        description: >
+          User-configured field that indicates the data source (e.g. typically 
+          named after the payer and state "BCBS Tennessee").
+      - name: result_date
+        description: Date of the test result.
+      - name: result
+        description: Cleaned numeric result of the lab test.
+      - name: lab_code
+        description: The normalized code or source code.
+      - name: hcc_code
+        description: >
+          HCC code from the latest CMS HCC model available in the mart.
+        meta:
+          terminology: https://github.com/tuva-health/tuva/blob/main/seeds/value_sets/hcc_suspecting/hcc_suspecting__hcc_descriptions.csv
+      - name: hcc_description
+        description: >
+          HCC description from the latest CMS HCC model available in the mart.
+      - name: current_year_billed
+        description: >
+          Flag indicating that the ICD-10-CM code mapped to the HCC has been
+          billed during the payment year.
+      - name: tuva_last_run
+        description: The date the model was run.
+
+  - name: hcc_suspecting__int_observation_suspects
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: _int_observation_suspects
+      tags: hcc_suspecting
+      materialized: table
+    description: Suspecting observation conditions.
+    columns:
+      - name: patient_id
+        description: Unique ID for the patient.
+      - name: data_source
+        description: >
+          User-configured field that indicates the data source (e.g. typically 
+          named after the payer and state "BCBS Tennessee").
+      - name: observation_date
+        description: Date the observation was recorded.
+      - name: observation_result
+        description: The result of the observation.
+      - name: condition_code
+        description: The code for the comorbid condition.
+      - name: condition_date
+        description: Recorded date for the condition.
+      - name: condition_concept_name
+        description: Clinical concept name for the comorbid condition.
+      - name: hcc_code
+        description: >
+          HCC code from the latest CMS HCC model available in the mart.
+        meta:
+          terminology: https://github.com/tuva-health/tuva/blob/main/seeds/value_sets/hcc_suspecting/hcc_suspecting__hcc_descriptions.csv
+      - name: hcc_description
+        description: >
+          HCC description from the latest CMS HCC model available in the mart.
+      - name: current_year_billed
+        description: >
+          Flag indicating that the ICD-10-CM code mapped to the HCC has been
+          billed during the payment year.
+      - name: tuva_last_run
+        description: The date the model was run.
+
   - name: hcc_suspecting__int_patient_hcc_history
     config:
       schema: |
@@ -134,8 +285,8 @@ models:
           condition_type <> 'problem').
       - name: current_year_billed
         description: >
-          Flag indicating that the ICD-10-CM code mapped to the HCC was billed
-          during the payment year.
+          Flag indicating that the ICD-10-CM code mapped to the HCC has been
+          billed during the payment year.
       - name: tuva_last_run
         description: The date the model was run.
 
@@ -161,8 +312,36 @@ models:
       - name: code
         description: >
           The condition code in the source system e.g. the ICD-10 code.
+      - name: data_source
+        description: >
+          User-configured field that indicates the data source (e.g. typically 
+          named after the payer and state "BCBS Tennessee").
       - name: tuva_last_run
         description: The date the model was run.
+
+  - name: hcc_suspecting__int_prep_egfr_labs
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: _int_prep_egfr_labs
+      tags: hcc_suspecting
+      materialized: table
+    description: Preparing eGFR labs with clean numeric results.
+    columns:
+      - name: patient_id
+        description: Unique ID for the patient.
+      - name: data_source
+        description: >
+          User-configured field that indicates the data source (e.g. typically 
+          named after the payer and state "BCBS Tennessee").
+      - name: code_type
+        description: The normalized code type or source code type.
+      - name: code
+        description: The normalized code or source code.
+      - name: result_date
+        description: Date of the test result.
+      - name: result
+        description: Cleaned numeric result of the lab test.
 
   ## Staging
   - name: hcc_suspecting__stg_core__condition
@@ -180,6 +359,41 @@ models:
       - name: condition_type
       - name: code_type
       - name: code
+      - name: data_source
+
+  - name: hcc_suspecting__stg_core__lab_result
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: _stg_lab_result
+      tags: hcc_suspecting
+      materialized: ephemeral
+    description: Staging conditions from core.
+    columns:
+      - name: lab_result_id
+      - name: patient_id
+      - name: code_type
+      - name: code
+      - name: status
+      - name: result
+      - name: result_date
+      - name: data_source
+
+  - name: hcc_suspecting__stg_core__observation
+    config:
+      schema: |
+        {%- if var('tuva_schema_prefix',None) != None -%}{{var('tuva_schema_prefix')}}_hcc_suspecting{% else %}hcc_suspecting{%- endif -%}
+      alias: _stg_observation
+      tags: hcc_suspecting
+      materialized: ephemeral
+    description: Staging observations from core.
+    columns:
+      - name: patient_id
+      - name: observation_date
+      - name: result
+      - name: code_type
+      - name: code
+      - name: data_source
 
   - name: hcc_suspecting__stg_core__patient
     config:
