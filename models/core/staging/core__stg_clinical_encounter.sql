@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('clinical_enabled',var('tuva_marts_enabled',False))
+     enabled = var('clinical_enabled',var('tuva_marts_enabled',False)) | as_bool
    )
 }}
 
@@ -18,6 +18,7 @@ select
     , cast(discharge_disposition_description as {{ dbt.type_string() }} ) as discharge_disposition_description
     , cast(attending_provider_id as {{ dbt.type_string() }} ) as attending_provider_id
     , cast(facility_npi as {{ dbt.type_string() }} ) as facility_npi
+    , cast(primary_diagnosis_code_type as {{ dbt.type_string() }} ) as primary_diagnosis_code_type
     , cast(primary_diagnosis_code as {{ dbt.type_string() }} ) as primary_diagnosis_code
     , cast(primary_diagnosis_description as {{ dbt.type_string() }} ) as primary_diagnosis_description
     , cast(ms_drg_code as {{ dbt.type_string() }} ) as ms_drg_code
@@ -28,5 +29,5 @@ select
     , cast(allowed_amount as {{ dbt.type_numeric() }} ) as allowed_amount
     , cast(charge_amount as {{ dbt.type_numeric() }} ) as charge_amount
     , cast(data_source as {{ dbt.type_string() }} ) as data_source
-    , cast(tuva_last_run as {{ dbt.type_timestamp() }} ) as tuva_last_run
+    , cast('{{ var('tuva_last_run')}}' as {{ dbt.type_timestamp() }} ) as tuva_last_run
 from {{ ref('encounter') }}

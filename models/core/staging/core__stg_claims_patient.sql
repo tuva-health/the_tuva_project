@@ -1,5 +1,7 @@
+-- depends_on: {{ ref('data_quality__claims_preprocessing_summary') }}
+
 {{ config(
-     enabled = var('claims_enabled',var('tuva_marts_enabled',False))
+     enabled = var('claims_enabled',var('tuva_marts_enabled',False)) | as_bool
    )
 }}
 
@@ -13,13 +15,14 @@
 with patient_stage as(
     select
         patient_id
+        ,first_name
+        ,last_name
         ,gender
         ,race
         ,birth_date
         ,death_date
         ,death_flag
-        ,first_name
-        ,last_name
+        ,social_security_number
         ,address
         ,city
         ,state
@@ -32,7 +35,7 @@ with patient_stage as(
                 then cast ('2050-01-01' as date)
                 else enrollment_end_date end DESC)
             as row_sequence
-    from {{ ref('eligibility')}}
+    from {{ ref('normalized_input__eligibility')}}
 )
 
 select
@@ -44,6 +47,7 @@ select
     , cast(birth_date as date) as birth_date
     , cast(death_date as date) as death_date
     , cast(death_flag as int) as death_flag
+    , cast(social_security_number as {{ dbt.type_string() }}) as social_security_number
     , cast(address as {{ dbt.type_string() }}) as address
     , cast(city as {{ dbt.type_string() }}) as city
     , cast(state as {{ dbt.type_string() }}) as state

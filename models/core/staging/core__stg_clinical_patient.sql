@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('clinical_enabled',var('tuva_marts_enabled',False))
+     enabled = var('clinical_enabled',var('tuva_marts_enabled',False)) | as_bool
    )
 }}
 
@@ -12,6 +12,7 @@ select
     , {{ try_to_cast_date('birth_date', 'YYYY-MM-DD') }} as birth_date
     , {{ try_to_cast_date('death_date', 'YYYY-MM-DD') }} as death_date
     , cast(death_flag as {{ dbt.type_int() }} ) as death_flag
+    , cast(social_security_number as {{ dbt.type_string() }} ) as social_security_number
     , cast(address as {{ dbt.type_string() }} ) as address
     , cast(city as {{ dbt.type_string() }} ) as city
     , cast(state as {{ dbt.type_string() }} ) as state
@@ -20,5 +21,6 @@ select
     , cast(latitude as {{ dbt.type_float() }} ) as latitude
     , cast(longitude as {{ dbt.type_float() }} ) as longitude
     , cast(data_source as {{ dbt.type_string() }} ) as data_source
-    , cast(tuva_last_run as {{ dbt.type_timestamp() }} ) as tuva_last_run
+    , cast('{{ var('tuva_last_run')}}' as {{ dbt.type_timestamp() }} ) as tuva_last_run
+
 from {{ ref('patient') }}

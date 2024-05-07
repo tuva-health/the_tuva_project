@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('claims_preprocessing_enabled',var('claims_enabled',var('tuva_marts_enabled',False)))
+     enabled = var('claims_preprocessing_enabled',var('claims_enabled',var('tuva_marts_enabled',False))) | as_bool
    )
 }}
 
@@ -14,4 +14,4 @@ MS_DRG_CODE,
 PLACE_OF_SERVICE_CODE,
 REVENUE_CENTER_CODE,
 '{{ var('tuva_last_run')}}' as tuva_last_run
-from {{ ref('medical_claim') }}
+from {{ ref('normalized_input__medical_claim') }}

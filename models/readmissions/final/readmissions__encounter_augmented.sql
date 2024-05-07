@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('readmissions_enabled',var('claims_enabled',var('tuva_marts_enabled',False)))
+     enabled = var('readmissions_enabled',var('claims_enabled',var('tuva_marts_enabled',False))) | as_bool
    )
 }}
 
@@ -37,7 +37,6 @@ select
     ee.missing_discharge_disposition_code_flag,
     ee.invalid_discharge_disposition_code_flag,
     ee.missing_primary_diagnosis_flag,
-    ee.multiple_primary_diagnoses_flag,
     ee.invalid_primary_diagnosis_code_flag,
     ee.no_diagnosis_ccs_flag,
     ee.overlaps_with_another_encounter_flag,

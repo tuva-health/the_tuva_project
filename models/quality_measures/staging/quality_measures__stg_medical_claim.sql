@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('quality_measures_enabled',var('claims_enabled',var('clinical_enabled',var('tuva_marts_enabled',False))))
+     enabled = var('quality_measures_enabled',var('claims_enabled',var('clinical_enabled',var('tuva_marts_enabled',False)))) | as_bool
    )
 }}
 
@@ -13,7 +13,7 @@ select
     , place_of_service_code
     , hcpcs_code
     , '{{ var('tuva_last_run')}}' as tuva_last_run
-from {{ ref('medical_claim') }}
+from {{ ref('core__medical_claim') }}
 
 {% elif var('claims_enabled', var('tuva_marts_enabled',False)) == true -%}
 
@@ -25,7 +25,7 @@ select
     , place_of_service_code
     , hcpcs_code
     , '{{ var('tuva_last_run')}}' as tuva_last_run
-from {{ ref('medical_claim') }}
+from {{ ref('core__medical_claim') }}
 
 {% elif var('clinical_enabled', var('tuva_marts_enabled',False)) == true -%}
 

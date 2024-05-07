@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('claims_preprocessing_enabled',var('claims_enabled',var('tuva_marts_enabled',False)))
+     enabled = var('claims_preprocessing_enabled',var('claims_enabled',var('tuva_marts_enabled',False))) | as_bool
    )
 }}
 
@@ -40,5 +40,10 @@ from add_encounter_id_to_acute_inpatient_encounters
 group by patient_id, encounter_id
 )
 
-select *, '{{ var('tuva_last_run')}}' as tuva_last_run
+select
+    patient_id
+    , encounter_id
+    , encounter_start_date
+    , encounter_end_date
+    , '{{ var('tuva_last_run')}}' as tuva_last_run
 from encounter_start_and_end_dates

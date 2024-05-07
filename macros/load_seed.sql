@@ -17,6 +17,45 @@
 {% endmacro %}
 
 
+{% macro duckdb__load_seed(uri,pattern,compression,headers,null_marker) %}
+{%- set columns = adapter.get_columns_in_relation(this) -%}
+{%- set collist = [] -%}
+
+{% for col in columns %}
+  {% do collist.append("'" ~col.name~"'" ~ ": " ~ "'"~col.dtype~"'") %}
+{% endfor %}
+
+{%- set cols = collist|join(',') -%}
+{# { log( cols,true) } #}
+
+{% set sql %}
+  set s3_access_key_id='AKIA2EPVNTV4FLAEBFGE';
+  set s3_secret_access_key='TARgblERrFP81Op+52KZW7HrP1Om6ObEDQAUVN2u';
+  set s3_region='us-east-1';
+  create or replace table {{this}} as
+  select
+      *
+    from
+        read_csv('s3://{{ uri }}/{{ pattern }}*',
+        {% if null_marker == true %} nullstr = '\N' {% else %} nullstr = '' {% endif %},
+         header=true,
+         columns= { {{ cols }} } )
+
+{% endset %}
+
+{% call statement('ducksql',fetch_result=true) %}
+{{ sql }}
+{% endcall %}
+
+{% if execute %}
+{# debugging { log(sql, True)} #}
+{% set results = load_result('ducksql') %}
+{{ log("Loaded data from external s3 resource\n  loaded to: " ~ this ~ "\n  from: s3://" ~ uri ,True) }}
+{# debugging { log(results, True) } #}
+{% endif %}
+
+{% endmacro %}
+
 
 {% macro redshift__load_seed(uri,pattern,compression,headers,null_marker) %}
 {% set sql %}
@@ -92,7 +131,8 @@ from files (format = 'csv',
     {% if compression == true %} compression = 'GZIP', {% else %} {% endif %}
     {% if headers == true %} skip_leading_rows = 1, {% else %} {% endif %}
     {% if null_marker == true %} null_marker = '\\N', {% else %} {% endif %}
-    quote = '"'
+    quote = '"',
+    allow_quoted_newlines = True
     )
 {% endset %}
 
@@ -119,11 +159,7 @@ from files (format = 'csv',
 {%- set collist = [] -%}
 
 {% for col in columns %}
-  {% if headers == true %}
-    {% do collist.append(col.name ~ "::" ~ col.dtype ~ " AS " ~ col.name ) %}
-  {% else %}
-    {% do collist.append("_c" ~ loop.index0 ~ "::" ~ col.dtype ~ " AS " ~ col.name ) %}
-  {% endif %}
+  {% do collist.append("_c" ~ loop.index0 ~ "::" ~ col.dtype ~ " AS " ~ col.name ) %}
 {% endfor %}
 
 {%- set cols = collist|join(',\n    ') -%}
@@ -135,6 +171,7 @@ FROM (
     {{ cols }}
 
   FROM '{{ s3_path }}'
+  {% if env_var('AWS_SESSION_TOKEN', False) %}
   WITH (
     CREDENTIAL (
       AWS_ACCESS_KEY = "{{ env_var('AWS_ACCESS_KEY') }}",
@@ -142,11 +179,12 @@ FROM (
       AWS_SESSION_TOKEN = "{{ env_var('AWS_SESSION_TOKEN') }}"
     )
   )
+  {% endif %}
 )
 FILEFORMAT = CSV
 PATTERN = '{{ pattern }}*'
 FORMAT_OPTIONS (
-  {% if headers == true %} 'header' = 'true', {% else %} 'header' = 'false', {% endif %}
+  {% if headers == true %} 'skipRows' = '1', {% else %} 'skipRows' = '0', {% endif %}
   {% if null_marker == true %} 'nullValue' = '\\N', {% else %} {% endif %}
   'enforceSchema' = 'true',
   'inferSchema' = 'false',

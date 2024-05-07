@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('clinical_enabled',var('tuva_marts_enabled',False))
+     enabled = var('clinical_enabled',var('tuva_marts_enabled',False)) | as_bool
    )
 }}
 
@@ -26,10 +26,10 @@ select
     , cast(source_reference_range_high as {{ dbt.type_string() }} ) as source_reference_range_high
     , cast(normalized_reference_range_low as {{ dbt.type_string() }} ) as normalized_reference_range_low
     , cast(normalized_reference_range_high as {{ dbt.type_string() }} ) as normalized_reference_range_high
-    , cast(source_abnormal_flag as {{ dbt.type_int() }} ) as source_abnormal_flag
-    , cast(normalized_abnormal_flag as {{ dbt.type_int() }} ) as normalized_abnormal_flag
+    , cast(source_abnormal_flag as {{ dbt.type_string() }} ) as source_abnormal_flag
+    , cast(normalized_abnormal_flag as {{ dbt.type_string() }} ) as normalized_abnormal_flag
     , cast(specimen as {{ dbt.type_string() }} ) as specimen
     , cast(ordering_practitioner_id as {{ dbt.type_string() }} ) as ordering_practitioner_id
     , cast(data_source as {{ dbt.type_string() }} ) as data_source
-    , cast(tuva_last_run as {{ dbt.type_timestamp() }} ) as tuva_last_run
+    , cast('{{ var('tuva_last_run')}}' as {{ dbt.type_timestamp() }} ) as tuva_last_run
 from {{ ref('lab_result') }}

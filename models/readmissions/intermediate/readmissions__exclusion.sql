@@ -1,5 +1,5 @@
 {{ config(
-     enabled = var('readmissions_enabled',var('claims_enabled',var('tuva_marts_enabled',False)))
+     enabled = var('readmissions_enabled',var('claims_enabled',var('tuva_marts_enabled',False))) | as_bool
    )
 }}
 
@@ -16,10 +16,15 @@
 -- exclusion categories
 with exclusions as (
 select distinct encounter_id
-from {{ ref('readmissions__diagnosis_ccs') }}
-where ccs_diagnosis_category in
+from {{ ref('readmissions__encounter_with_ccs') }}
+where
+(ccs_diagnosis_category is not null)
+and
+(
+ccs_diagnosis_category in
     (select distinct ccs_diagnosis_category
      from {{ ref('readmissions__exclusion_ccs_diagnosis_category') }} )
+)
 )
 
 
