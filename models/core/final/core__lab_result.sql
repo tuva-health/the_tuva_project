@@ -19,17 +19,17 @@ select
     , case
         when labs.NORMALIZED_CODE_TYPE is not null then labs.NORMALIZED_CODE_TYPE
         when loinc.loinc is not null then 'loinc'
-        when snomed.conceptid is not null then 'snomed-ct'
+        when snomed_ct.snomed_ct is not null then 'snomed-ct'
         else null end as NORMALIZED_CODE_TYPE
     , case
         when labs.NORMALIZED_CODE is not null then labs.NORMALIZED_CODE
         when loinc.loinc is not null then loinc.loinc
-        when snomed.conceptid is not null then snomed.conceptid
+        when snomed_ct.snomed_ct is not null then snomed_ct.snomed_ct
         else null end as NORMALIZED_CODE
     , case
         when labs.NORMALIZED_DESCRIPTION is not null then labs.NORMALIZED_DESCRIPTION
         when loinc.long_common_name is not null then loinc.long_common_name
-        when snomed.term is not null then snomed.term
+        when snomed_ct.description is not null then snomed_ct.description
         else null end as NORMALIZED_DESCRIPTION
     , case when coalesce(labs.NORMALIZED_CODE, labs.NORMALIZED_DESCRIPTION) is not null then 'manual'
          when coalesce(LOINC.loinc,loinc.long_common_name,snomed.conceptid,snomed.term) is not null then 'automatic'
@@ -55,9 +55,9 @@ From {{ ref('core__stg_clinical_lab_result')}} as labs
 left join {{ ref('terminology__loinc') }} loinc
     on labs.source_code_type = 'loinc'
         and labs.source_code = loinc.loinc
-left join health_gorilla.terminology.snomed snomed
+left join {{ref('terminology__snomed_ct')}} snomed_ct
     on labs.source_code_type = 'snomed-ct'
-        and labs.source_code = snomed.conceptid
+        and labs.source_code = snomed_ct.snomed_ct
 
  {% else %}
 
@@ -73,12 +73,12 @@ select
     , case
         when labs.NORMALIZED_CODE_TYPE is not null then labs.NORMALIZED_CODE_TYPE
         when loinc.loinc is not null then 'loinc'
-        when snomed.conceptid is not null then 'snomed-ct'
+        when snomed_ct.snomed_ct is not null then 'snomed-ct'
         else null end as NORMALIZED_CODE_TYPE
     , case
         when labs.NORMALIZED_CODE is not null then labs.NORMALIZED_CODE
         when loinc.loinc is not null then loinc.loinc
-        when snomed.conceptid is not null then snomed.conceptid
+        when snomed_ct.snomed_ct is not null then snomed_ct.snomed_ct
         else null end as NORMALIZED_CODE
     , case
         when labs.NORMALIZED_DESCRIPTION is not null then labs.NORMALIZED_DESCRIPTION
@@ -111,19 +111,18 @@ From  {{ ref('core__stg_clinical_lab_result')}} as labs
 left join {{ ref('terminology__loinc') }} loinc
     on labs.source_code_type = 'loinc'
         and labs.source_code = loinc.loinc
-left join health_gorilla.terminology.snomed snomed
+left join {{ref('terminology__snomed_ct')}} snomed_ct
     on labs.source_code_type = 'snomed-ct'
-        and labs.source_code = snomed.conceptid
+        and labs.source_code = snomed_ct.snomed_ct
 left join {{ ref('custom_mapped') }} custom_mapped
-    on custom_mapped.domain = 'lab_result'
-        and ( lower(labs.source_code_type) = lower(custom_mapped.source_code_type)
-            or ( labs.source_code_type is null and custom_mapped.source_code_type is null)
-            )
-        and (labs.source_code = custom_mapped.source_code
-            or ( labs.source_code is null and custom_mapped.source_code is null)
-            )
-        and (labs.source_description = custom_mapped.source_description
-            or ( labs.source_description is null and custom_mapped.source_description is null)
-            )
-        and not (labs.source_code is null and labs.source_description is null)
+    on  ( lower(labs.source_code_type) = lower(custom_mapped.source_code_type)
+        or ( labs.source_code_type is null and custom_mapped.source_code_type is null)
+        )
+    and (labs.source_code = custom_mapped.source_code
+        or ( labs.source_code is null and custom_mapped.source_code is null)
+        )
+    and (labs.source_description = custom_mapped.source_description
+        or ( labs.source_description is null and custom_mapped.source_description is null)
+        )
+    and not (labs.source_code is null and labs.source_description is null)
 {% endif %}
