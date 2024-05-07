@@ -138,8 +138,7 @@ from {{ ref('core__stg_clinical_medication')}} meds
         on meds.source_code_type = 'rxnorm'
         and meds.source_code = rxatc.rxcui
     left join {{ ref('custom_mapped') }} custom_mapped_ndc
-        on custom_mapped_ndc.domain = 'medication'
-        and custom_mapped_ndc.normalized_code_type = 'ndc'
+        on custom_mapped_ndc.normalized_code_type = 'ndc'
         and ( lower(meds.source_code_type) = lower(custom_mapped_ndc.source_code_type)
             or ( meds.source_code_type is null and custom_mapped_ndc.source_code_type is null)
             )
@@ -151,8 +150,7 @@ from {{ ref('core__stg_clinical_medication')}} meds
             )
         and not (meds.source_code is null and meds.source_description is null)
     left join {{ ref('custom_mapped') }} custom_mapped_rxnorm
-        on custom_mapped_rxnorm.domain = 'medication'
-        and custom_mapped_rxnorm.normalized_code_type = 'rxnorm'
+        on custom_mapped_rxnorm.normalized_code_type = 'rxnorm'
         and ( lower(meds.source_code_type) = lower(custom_mapped_rxnorm.source_code_type)
             or ( meds.source_code_type is null and custom_mapped_rxnorm.source_code_type is null)
             )
@@ -164,8 +162,7 @@ from {{ ref('core__stg_clinical_medication')}} meds
             )
         and not (meds.source_code is null and meds.source_description is null)
     left join {{ ref('custom_mapped') }} custom_mapped_atc
-        on custom_mapped.domain = 'medication'
-        and custom_mapped_atc.normalized_code_type = 'atc'
+        on custom_mapped_atc.normalized_code_type = 'atc'
         and ( lower(meds.source_code_type) = lower(custom_mapped_atc.source_code_type)
             or ( meds.source_code_type is null and custom_mapped_atc.source_code_type is null)
             )

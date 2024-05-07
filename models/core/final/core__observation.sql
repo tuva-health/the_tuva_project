@@ -22,7 +22,7 @@ select
         when icd10pcs.icd_10_pcs is not null then 'icd-10-pcs'
         when icd9pcs.icd_9_pcs is not null then 'icd-10-pcs'
         when hcpcs.hcpcs is not null then 'hcpcs'
-        when snomed.conceptid is not null then 'snomed-ct'
+        when snomed_ct.snomed_ct is not null then 'snomed-ct'
         when loinc.loinc is not null then 'loinc'
         end as NORMALIZED_CODE_TYPE
   , coalesce(
@@ -32,7 +32,7 @@ select
       , icd10pcs.icd_10_pcs
       , icd9pcs.icd_9_pcs
       , hcpcs.hcpcs
-      , snomed.conceptid
+      , snomed_ct.snomed_ct
       , loinc.loinc
       ) as NORMALIZED_CODE
       , coalesce(
@@ -42,7 +42,7 @@ select
       , icd10pcs.description
       , icd9pcs.long_description
       , hcpcs.long_description
-      , snomed.term
+      , snomed_ct.description
       , loinc.long_common_name
       ) as NORMALIZED_DESCRIPTION
      , case
@@ -53,7 +53,7 @@ select
           , icd10pcs.icd_10_pcs
           , icd9pcs.icd_9_pcs
           , hcpcs.hcpcs
-          , snomed.conceptid
+          , snomed_ct.snomed_ct
           , loinc.loinc) is not null then 'automatic'
          end as mapping_method
     , obs.RESULT
@@ -81,9 +81,9 @@ left join {{ ref('terminology__icd_9_pcs') }} icd9pcs
 left join {{ ref('terminology__hcpcs_level_2') }} hcpcs
     on obs.source_code_type = 'hcpcs'
         and obs.source_code = hcpcs.hcpcs
-left join health_gorilla.terminology.snomed snomed
+left join {{ ref('terminology__snomed_ct')}} snomed_ct
     on obs.source_code_type = 'snomed-ct'
-        and obs.source_code = snomed.conceptid
+        and obs.source_code = snomed_ct.snomed_ct
 left join {{ ref('terminology__loinc') }} loinc
     on obs.source_code_type = 'loinc'
         and obs.source_code = loinc.loinc
@@ -117,7 +117,7 @@ select
       , icd10pcs.icd_10_pcs
       , icd9pcs.icd_9_pcs
       , hcpcs.hcpcs
-      , snomed.conceptid
+      , snomed_ct.snomed_ct
       , loinc.loinc
       , custom_mapped.normalized_code
       ) as NORMALIZED_CODE
@@ -128,7 +128,7 @@ select
       , icd10pcs.description
       , icd9pcs.long_description
       , hcpcs.long_description
-      , snomed.term
+      , snomed_ct.description
       , loinc.long_common_name
       , custom_mapped.normalized_description
       ) as NORMALIZED_DESCRIPTION
@@ -140,7 +140,7 @@ select
           , icd10pcs.icd_10_pcs
           , icd9pcs.icd_9_pcs
           , hcpcs.hcpcs
-          , snomed.conceptid
+          , snomed_ct.snomed_ct
           , loinc.loinc) is not null then 'automatic'
          when coalesce(custom_mapped.normalized_code,custom_mapped.normalized_description) is not null and custom_mapped.not_mapped is null then 'custom'
          when custom_mapped.not_mapped is not null then custom_mapped.not_mapped
@@ -170,22 +170,21 @@ left join {{ ref('terminology__icd_9_pcs') }} icd9pcs
 left join {{ ref('terminology__hcpcs_level_2') }} hcpcs
     on obs.source_code_type = 'hcpcs'
         and obs.source_code = hcpcs.hcpcs
-left join health_gorilla.terminology.snomed snomed
+left join {{ ref('terminology__snomed_ct')}} snomed_ct
     on obs.source_code_type = 'snomed-ct'
-        and obs.source_code = snomed.conceptid
+        and obs.source_code = snomed_ct.snomed_ct
 left join {{ ref('terminology__loinc') }} loinc
     on obs.source_code_type = 'loinc'
         and obs.source_code = loinc.loinc
 left join {{ ref('custom_mapped') }} custom_mapped
-    on custom_mapped.domain = 'observation'
-        and ( lower(obs.source_code_type) = lower(custom_mapped.source_code_type)
-            or ( obs.source_code_type is null and custom_mapped.source_code_type is null)
-            )
-        and (obs.source_code = custom_mapped.source_code
-            or ( obs.source_code is null and custom_mapped.source_code is null)
-            )
-        and (obs.source_description = custom_mapped.source_description
-            or ( obs.source_description is null and custom_mapped.source_description is null)
-            )
-        and not (obs.source_code is null and obs.source_description is null)
+    on  ( lower(obs.source_code_type) = lower(custom_mapped.source_code_type)
+        or ( obs.source_code_type is null and custom_mapped.source_code_type is null)
+        )
+    and (obs.source_code = custom_mapped.source_code
+        or ( obs.source_code is null and custom_mapped.source_code is null)
+        )
+    and (obs.source_description = custom_mapped.source_description
+        or ( obs.source_description is null and custom_mapped.source_description is null)
+        )
+    and not (obs.source_code is null and obs.source_description is null)
 {% endif %}
